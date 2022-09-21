@@ -102,6 +102,39 @@ function viewEmployees () {
 
 function addDepartment () {
     console.log('Add Department');
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'Please provide the department name you would like to add (limit: 30 characters).',
+        }
+    ])
+    .then(answer=>{
+        const sql = `INSERT INTO departments(department_name) VALUES (?)`;
+        const params = [answer.departmentName];
+
+        db.query(sql, params, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.log(`${answer.departmentName} department has been added.`);
+        })
+    })
+    .then(()=>{
+        const sql = `SELECT * FROM departments`
+
+        db.query(sql, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.table(rows);
+            init();
+        })
+    })
+    
+
 }
 
 function addRole () {
