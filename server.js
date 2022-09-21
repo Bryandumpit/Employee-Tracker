@@ -203,7 +203,7 @@ function rolePrompt () {
 
 
 function addEmployee () {
-    const sql = `SELECT * FROM departments`;
+    const sql = `SELECT * FROM employees LEFT JOIN roles ON employees.role_id = roles.id`;
 
     console.log('Add Employee \nPlease reference the table below for department_id');
     
@@ -220,9 +220,54 @@ function addEmployee () {
 
 function employeePrompt () {
     console.log('sent to employeePrompt()');
-    console.log('\n-------------------------\nWhat would you like to do next?');
+
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'Please provide the first name of the employee (limit: 30 characters).',
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Please provide the last name of the employee (limit: 30 characters).'
+        },
+        {
+            type: 'input',
+            name: 'role_id',
+            message: 'Please provide the id of the role of the employee(reference table above).'
+        },
+        {
+            type: 'input',
+            name: 'manager_id',
+            message: 'Please provide the id of the manager of the employee(reference table above).'
+        }
+    ])
+    .then(answer=>{
+        const sql = `INSERT INTO employees(first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
+        const params = [answer.first_name, answer.last_name, answer.role_id, answer.manager_id];
+
+        db.query(sql, params, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.log(`Employee ${answer.last_name, answer.first_name} has been added.`)
+        })
+    })
+    .then(()=>{
+        const sql = `SELECT * FROM employees`;
+
+        db.query(sql, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.table(rows);
+            console.log('\n-------------------------\nWhat would you like to do next?');
             init();
-    
+        })
+    })   
 }
 
 //initialize and quit functions
@@ -239,66 +284,3 @@ function quit () {
     console.log('\nEmployee Tracker closed. Good Bye!\n');
     process.exit();
 }
-
-
-
-// const employee = (answer) => {
-//     return inquirer.prompt([
-//         {
-//             type: 'list',
-//             name: 'choice',
-//             message: 'Select an option',
-//             choices:[
-//                 'View All Departments',
-//                 'View All Roles',
-//                 'View All Employees',
-//                 'Add a Department',
-//                 'Add a Role',
-//                 'Add an Employee',
-//                 'Quit'
-//             ]
-//         }
-//     ])
-//     //switch statement based on user choice
-//     .then(answer => {
-//         inputHandler(answer)
-//     });
-// };
-
-// function inputHandler (answer) {
-//     switch(answer.choice){
-//         case 'View All Departments':
-//             viewTables.viewDepartments();
-//             break;
-//         case 'View All Roles':
-//             viewTables.viewRoles();
-//             break;
-//         case 'View All Employees':
-//             viewTables.viewEmployees();
-//             break;
-//         case 'Add a Department':
-//             addDepartment();
-//             break;
-//         case 'Add a Role':
-//             addRole();
-//             break;
-//         case 'Add an Employee':
-//             addEmployee();
-//             break;
-//         case 'Quit':
-//             quit();
-//     }
-// }
-
-// function quit () {
-//     console.log('\nEmployee Tracker closed. Good Bye!\n');
-//     process.exit();
-// }
-
-// function init () {
-//     console.log('\n -------------------------------------- \n ')
-//     employee()
-//         .catch(err=>{
-//             console.log(err);
-//         }); 
-// }
