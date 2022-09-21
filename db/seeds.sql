@@ -11,12 +11,13 @@ VALUES
     ('Clerk', 40000.00, 1),
     ('Lab Manager', 80000.00, 2),
     ('Scientist', 60000.00, 2),
-    ('Lab Technician', 40000.00, 2,)
-    ('Floor Manager', 80000.00, 3)
-    ('Technical Group Leader', 60000.00, 3)
+    ('Lab Technician', 40000.00, 2),
+    ('Floor Manager', 80000.00, 3),
+    ('Technical Group Leader', 60000.00, 3),
     ('Technician', 40000.00, 3);
 
 INSERT INTO employees(first_name, last_name, role_id, manager_id)
+VALUES
     ('Ali', 'Gater', 1, NULL),
     ('Bennie', 'Factor', 2, 1),
     ('Chester', 'Minit', 3, 1),

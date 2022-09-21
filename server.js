@@ -1,5 +1,14 @@
 const inquirer = require('inquirer');
 const db = require('./db/connection');
+const cTable = require('console.table');
+
+db.connect(err=> {
+    if (err) throw err;
+    console.log ('Connected to employees_db database.');
+    init();
+}
+
+);
 
 const employee = (answer) => {
     return inquirer.prompt([
@@ -49,16 +58,46 @@ const employee = (answer) => {
 
 
 //define functions below; modularize later
-function viewDepartments () {
-    console.log('View Deparments');
+function viewDepartments () { 
+    const sql = `SELECT * FROM departments`;
+
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.log('View Departments');
+        console.table(rows);
+        init();
+    })
 }
 
 function viewRoles () {
-    console.log('View Roles');
+    const sql = `SELECT * FROM roles`;
+
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.log('View Roles');
+        console.table(rows);
+        init();
+    })
 }
 
 function viewEmployees () {
-    console.log('View Employees');
+    const sql = `SELECT * FROM employees`;
+
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.log('View Employees');
+        console.table(rows);
+        init();
+    })
 }
 
 function addDepartment () {
@@ -72,16 +111,18 @@ function addRole () {
 function addEmployee () {
     console.log('Add Employee');
 }
+
+function quit () {
+    console.log('Quit');
+    process.exit();
+}
 //define functions above; modularize later
 
 function init () {
     employee()
-        .then((answer)=>{
-            console.log(answer)
-        })
         .catch(err=>{
             console.log(err);
         })
 }
 
-init();
+
