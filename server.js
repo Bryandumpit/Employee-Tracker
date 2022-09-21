@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
 
-db.connect(err=> {
+db.connect(async function (err) {
     if (err) throw err;
     console.log ('Connected to employees_db database.');
     init();
@@ -138,20 +138,78 @@ function addDepartment () {
 }
 
 function addRole () {
+    const sql = `SELECT * FROM departments`;
     console.log('Add Role');
+    console.log('Please reference the table below for department_id')
+   
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.table(rows);
+        rolePrompt();
+    });
+};
+
+function rolePrompt () {
+    
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roleTitle',
+            message: 'Please provide the title of the role you would like to add (limit: 30 characters).',
+        },
+        {
+            type: 'input',
+            name: 'roleSalary',
+            message: 'Please provide the salary for this role in CAD (e.g. 10000.00).'
+        },
+        {
+            type: 'input',
+            name: 'roleDepartment',
+            message: 'Please provide the id of the department this role belongs to (reference table above).'
+        }
+    ])
+    .then(answer=>{
+        const sql = `INSERT INTO roles(title, salary, department_id) VALUES (?,?,?)`;
+        const params = [answer.roleTitle, answer.roleSalary, answer.roleDepartment];
+
+        db.query(sql, params, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.log(`${answer.roleTitle} has been added.`);
+        })
+    })
+    .then(()=>{
+        const sql = `SELECT * FROM roles`;
+
+        db.query(sql, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            };
+            console.table(rows);
+            init();
+        });
+    })
 }
+
 
 function addEmployee () {
     console.log('Add Employee');
 }
 
 function quit () {
-    console.log('Quit');
+    console.log('Employee Tracker closed. Good Bye!');
     process.exit();
 }
 //define functions above; modularize later
 
 function init () {
+    console.log('Employee Tracker initialized.')
     employee()
         .catch(err=>{
             console.log(err);
