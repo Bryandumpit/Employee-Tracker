@@ -2,15 +2,14 @@ const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
 
-db.connect(async function (err) {
+db.connect( function (err) {
     if (err) throw err;
     console.log('Employee Tracker initialized.');
     init();
-}
+});
 
-);
-
-const employee = (answer) => {
+//prompt and input handling
+function employeeTracker () {
     return inquirer.prompt([
         {
             type: 'list',
@@ -27,37 +26,37 @@ const employee = (answer) => {
             ]
         }
     ])
-    //switch statement based on user choice
-    .then(
-        answer => {
-            switch(answer.choice){
-                case 'View All Departments':
-                    viewDepartments();
-                    break;
-                case 'View All Roles':
-                    viewRoles();
-                    break;
-                case 'View All Employees':
-                    viewEmployees();
-                    break;
-                case 'Add a Department':
-                    addDepartment();
-                    break;
-                case 'Add a Role':
-                    addRole();
-                    break;
-                case 'Add an Employee':
-                    addEmployee();
-                    break;
-                case 'Quit':
-                    quit();
-            }
-        }
-    )
+    .then((answer)=>{
+        switch(answer.choice){
+            case 'View All Departments':
+                viewDepartments();
+                break;
+            case 'View All Roles':
+                viewRoles();
+                break;
+            case 'View All Employees':
+                viewEmployees();
+                break;
+            case 'Add a Department':
+                addDepartment();
+                break;
+            case 'Add a Role':
+                addRole();
+                break;
+            case 'Add an Employee':
+                addEmployee();
+                break;
+            case 'Quit':
+                quit();
+        };  
+    })
 }
+    
+    
 
+//query functions
+//View queries:
 
-//define functions below; modularize later
 function viewDepartments () { 
     const sql = `SELECT * FROM departments`;
 
@@ -68,6 +67,7 @@ function viewDepartments () {
         };
         console.log('View Departments');
         console.table(rows);
+        console.log('\n-------------------------\nWhat would you like to do next?')
         init();
     })
 }
@@ -82,6 +82,7 @@ function viewRoles () {
         };
         console.log('View Roles');
         console.table(rows);
+        console.log('\n-------------------------\nWhat would you like to do next?')
         init();
     })
 }
@@ -96,10 +97,12 @@ function viewEmployees () {
         };
         console.log('View Employees');
         console.table(rows);
+        console.log('\n-------------------------\nWhat would you like to do next?')
         init();
     })
 }
 
+//Add to queries:
 function addDepartment () {
     console.log('Add Department');
     return inquirer.prompt([
@@ -130,6 +133,7 @@ function addDepartment () {
                 return;
             };
             console.table(rows);
+            console.log('\n-------------------------\nWhat would you like to do next?');
             init();
         })
     })
@@ -191,6 +195,7 @@ function rolePrompt () {
                 return;
             };
             console.table(rows);
+            console.log('\n-------------------------\nWhat would you like to do next?');
             init();
         });
     })
@@ -215,21 +220,85 @@ function addEmployee () {
 
 function employeePrompt () {
     console.log('sent to employeePrompt()');
-    init();
+    console.log('\n-------------------------\nWhat would you like to do next?');
+            init();
+    
+}
+
+//initialize and quit functions
+function init () {
+    console.log('\n -------------------------------------- \n')
+    
+    employeeTracker()
+        .catch(err=>{
+            console.log(err);
+        })
 }
 
 function quit () {
     console.log('\nEmployee Tracker closed. Good Bye!\n');
     process.exit();
 }
-//define functions above; modularize later
-
-function init () {
-    console.log('\n -------------------------------------- \n ')
-    employee()
-        .catch(err=>{
-            console.log(err);
-        })
-}
 
 
+
+// const employee = (answer) => {
+//     return inquirer.prompt([
+//         {
+//             type: 'list',
+//             name: 'choice',
+//             message: 'Select an option',
+//             choices:[
+//                 'View All Departments',
+//                 'View All Roles',
+//                 'View All Employees',
+//                 'Add a Department',
+//                 'Add a Role',
+//                 'Add an Employee',
+//                 'Quit'
+//             ]
+//         }
+//     ])
+//     //switch statement based on user choice
+//     .then(answer => {
+//         inputHandler(answer)
+//     });
+// };
+
+// function inputHandler (answer) {
+//     switch(answer.choice){
+//         case 'View All Departments':
+//             viewTables.viewDepartments();
+//             break;
+//         case 'View All Roles':
+//             viewTables.viewRoles();
+//             break;
+//         case 'View All Employees':
+//             viewTables.viewEmployees();
+//             break;
+//         case 'Add a Department':
+//             addDepartment();
+//             break;
+//         case 'Add a Role':
+//             addRole();
+//             break;
+//         case 'Add an Employee':
+//             addEmployee();
+//             break;
+//         case 'Quit':
+//             quit();
+//     }
+// }
+
+// function quit () {
+//     console.log('\nEmployee Tracker closed. Good Bye!\n');
+//     process.exit();
+// }
+
+// function init () {
+//     console.log('\n -------------------------------------- \n ')
+//     employee()
+//         .catch(err=>{
+//             console.log(err);
+//         }); 
+// }
