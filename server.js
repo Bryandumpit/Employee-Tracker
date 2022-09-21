@@ -4,7 +4,7 @@ const cTable = require('console.table');
 
 db.connect(async function (err) {
     if (err) throw err;
-    console.log ('Connected to employees_db database.');
+    console.log('Employee Tracker initialized.');
     init();
 }
 
@@ -139,8 +139,7 @@ function addDepartment () {
 
 function addRole () {
     const sql = `SELECT * FROM departments`;
-    console.log('Add Role');
-    console.log('Please reference the table below for department_id')
+    console.log('Add Role \nPlease reference the table below for department_id');
    
     db.query(sql, (err,rows) => {
         if (err) {
@@ -199,17 +198,34 @@ function rolePrompt () {
 
 
 function addEmployee () {
-    console.log('Add Employee');
+    const sql = `SELECT * FROM departments`;
+
+    console.log('Add Employee \nPlease reference the table below for department_id');
+    
+   
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.table(rows);
+        employeePrompt();
+    });
+}
+
+function employeePrompt () {
+    console.log('sent to employeePrompt()');
+    init();
 }
 
 function quit () {
-    console.log('Employee Tracker closed. Good Bye!');
+    console.log('\nEmployee Tracker closed. Good Bye!\n');
     process.exit();
 }
 //define functions above; modularize later
 
 function init () {
-    console.log('Employee Tracker initialized.')
+    console.log('\n -------------------------------------- \n ')
     employee()
         .catch(err=>{
             console.log(err);
