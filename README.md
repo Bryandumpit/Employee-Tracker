@@ -18,7 +18,7 @@ This application was built with:
 
 ## Preview and Walkthrough
 ![screenshot](./assets/images/Employee-Tracker-Screen.PNG)
-![Walkthrough Video]({video-url} "Employee Tracker Walkthrough")
+[Walkthrough Video](https://watch.screencastify.com/v/56XnRqHIBwu1vFZPL9Qo) "Employee Tracker Walkthrough"
 
 ## Contribution
 Made with ❤️ by Bryan Dumpit!
