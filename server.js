@@ -22,6 +22,7 @@ function employeeTracker () {
                 'Add a Department',
                 'Add a Role',
                 'Add an Employee',
+                'Update an Employee Role',
                 'Quit'
             ]
         }
@@ -45,6 +46,9 @@ function employeeTracker () {
                 break;
             case 'Add an Employee':
                 addEmployee();
+                break;
+            case 'Update an Employee Role':
+                updateEmployeeRole();
                 break;
             case 'Quit':
                 quit();
@@ -88,7 +92,9 @@ function viewRoles () {
 }
 
 function viewEmployees () {
-    const sql = `SELECT * FROM employees`;
+    const sql = `SELECT employees.id, employees.first_name, employees.last_name, roles.title AS title, roles.salary AS salary, departments.department_name, employees.manager_id AS manager
+                FROM (employees JOIN roles ON employees.role_id = roles.id)
+                JOIN departments ON roles.department_id = departments.id`;
 
     db.query(sql, (err,rows) => {
         if (err) {
@@ -268,6 +274,76 @@ function employeePrompt () {
             init();
         })
     })   
+}
+
+//update function
+function updateEmployeeRole () {
+    const sql = `SELECT roles.id AS role_id, roles.title AS title, employees.id AS employee_id, employees.first_name, employees.last_name 
+                FROM employees 
+                LEFT JOIN roles ON employees.role_id = roles.id`;
+
+    console.log('Update employee role \nPlease reference the tables below.');
+
+    db.query(sql, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.table(rows);
+    });
+
+    const sql2 = `SELECT * FROM roles`;
+    db.query(sql2, (err,rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        };
+        console.table(rows);
+        updateEmployeePrompt();
+    });
+
+}
+function updateEmployeePrompt(){
+    return inquirer.prompt([
+        {
+            type:'choice',
+            name: 'employeeId',
+            message: 'Please enter the id of the employee (refer to tables above).'
+        },
+        {
+            type:'choice',
+            name: 'newRoleId',
+            message: 'Please enter the id of the new role for the employee (refer to tables above).'
+        }
+    ])
+    .then((answer)=>{
+        const sql = `UPDATE employees SET role_id=? WHERE id =?`;
+        const params = [answer.newRoleId, answer.employeeId];
+
+        db.query(sql, params, (err,rows) => {
+            if (err) {
+                console.log(err);
+                return;
+            } else if (!rows.affectedRows) {
+                console.log('Employee not found')
+            } else {
+                console.table(`Employee ID no. ${answer.employeeId} role has been updated to Role ID no. ${answer.newRoleId}.`);
+            } 
+        })
+    })
+    .then(()=>{
+        const sql = `SELECT * FROM employees`;
+
+        db.query(sql, (err,rows)=>{
+            if (err) {
+                console.log(err);
+                return;
+            }
+            console.table(rows);
+            console.log('\n-------------------------\nWhat would you like to do next?');
+            init();
+        })
+    })
 }
 
 //initialize and quit functions
